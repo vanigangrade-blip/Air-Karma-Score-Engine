@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Air Karma Score - India</title>
+<link rel="stylesheet" href="/static/vendor/leaflet.css">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div class="brand"><span class="dot"></span> Air Karma Score <small>India</small></div>
+  <nav id="tabs">
+    <button data-tab="overview" class="on">Overview</button>
+    <button data-tab="locality">My locality</button>
+    <button data-tab="fairness">Fairness</button>
+    <button data-tab="model">Model &amp; XAI</button>
+    <button data-tab="quality">Data quality</button>
+    <button data-tab="data">Data</button>
+  </nav>
+  <div id="snap" class="snap"></div>
+</header>
+
+<div id="banner" class="banner" hidden></div>
+
+<main>
+<section id="overview" class="tab on">
+  <div class="kpis" id="kpis"></div>
+  <div class="grid2">
+    <div class="card mapcard"><h2>Every station, scored</h2><p class="sub">Colour = Air Karma Score (100 is clean, 50 is at the legal limit). Click a dot.</p>
+      <div id="map"></div><div class="legend" id="legend"></div></div>
+    <div class="card"><h2>Worst and best cities</h2><p class="sub">Mean score of a city's stations.</p>
+      <canvas id="cityChart" height="330"></canvas></div>
+  </div>
+  <div class="card"><h2>States, by average score</h2><canvas id="stateChart" height="150"></canvas></div>
+</section>
+
+<section id="locality" class="tab">
+  <div class="card">
+    <h2>Find a locality</h2>
+    <div class="row"><input id="search" placeholder="Search a station, city or state (e.g. Anand Vihar, Pune)" autocomplete="off">
+    <select id="stateSel"><option value="">All states</option></select></div>
+    <div id="results" class="results"></div>
+  </div>
+  <div id="detail"></div>
+</section>
+
+<section id="fairness" class="tab">
+  <div class="kpis" id="fairKpis"></div>
+  <div class="grid2">
+    <div class="card"><h2>Same city, very different air</h2>
+      <p class="sub">Worst vs best station score in each city with 2+ stations (top 15 gaps).</p><canvas id="gapChart" height="330"></canvas></div>
+    <div class="card"><h2>All cities</h2>
+      <div class="row"><label><input type="checkbox" id="multiOnly" checked> only cities with 2+ stations</label></div>
+      <div class="tablewrap"><table id="cityTable"></table></div></div>
+  </div>
+  <div class="card" id="equityCard"></div>
+</section>
+
+<section id="model" class="tab">
+  <div class="card"><h2>How well can PM2.5 be estimated where there is no sensor?</h2>
+    <p class="sub" id="cvLead"></p>
+    <div class="grid2"><div><canvas id="cvChart" height="300"></canvas></div><div class="tablewrap"><table id="cvTable"></table></div></div></div>
+  <div class="grid2">
+    <div class="card"><h2>What drives the estimate (3 methods)</h2><p class="sub" id="xaiLead"></p><canvas id="impChart" height="260"></canvas></div>
+    <div class="card"><h2>Are the explanations stable?</h2><div id="stab"></div></div>
+  </div>
+</section>
+
+<section id="quality" class="tab">
+  <div class="grid2">
+    <div class="card"><h2>Data cleaning log</h2><div id="qcBox"></div></div>
+    <div class="card"><h2>Is the score design arbitrary?</h2><div id="sensBox"></div></div>
+  </div>
+</section>
+
+<section id="data" class="tab">
+  <div class="card"><h2>Add a newer snapshot</h2>
+    <p class="sub">The CPCB feed on data.gov.in is a live snapshot. Upload a new CSV of the same layout to build history; the analysis re-runs and time trends appear once there are 2+ snapshots.</p>
+    <div class="row"><input type="file" id="file" accept=".csv"><button id="upload" class="btn">Upload &amp; re-analyse</button></div>
+    <div id="upmsg" class="sub"></div>
+    <h3>Snapshots loaded</h3><ul id="snapList"></ul>
+  </div>
+  <div class="card"><h2>Where the data comes from</h2>
+    <p>CPCB real-time AQI feed, published on <a href="https://data.gov.in/resource/real-time-air-quality-index-various-locations" target="_blank" rel="noopener">data.gov.in</a>. Limits are the Indian NAAQS (2009). Run <code>scripts/fetch_datagov.py</code> hourly with a free API key to collect snapshots automatically.</p></div>
+</section>
+</main>
+<footer>Scores come from one hourly reading per station compared with 24-hour legal limits. Treat them as a snapshot, not a health verdict.</footer>
+
+<script src="/static/vendor/leaflet.js"></script>
+<script src="/static/vendor/chart.umd.js"></script>
+<script src="/static/app.js"></script>
+<script>
+window.addEventListener("load", function () {
+  if (!window.__appStarted || typeof L === "undefined" || typeof Chart === "undefined") {
+    var b = document.getElementById("banner"); b.hidden = false; b.className = "banner err";
+    b.textContent = "The page scripts did not load. Press Ctrl+F5. If it persists, open DevTools (F12) > Console and send me the red message.";
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+fastapi>=0.110
+uvicorn>=0.27
+python-multipart>=0.0.9
+pandas>=2.1
+numpy>=1.26
+scipy>=1.11
+scikit-learn>=1.4
+shap>=0.45
+requests>=2.31
+pytest>=8
+httpx>=0.27
